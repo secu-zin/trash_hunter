@@ -5,50 +5,72 @@
   <title>Trash Hunter - 홈</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
 
-  <!-- 내비게이션 -->
-  <nav>
-    <ul>
-      <li><a href="/">홈</a></li>
-      <li><a href="/cardnews">카드뉴스</a></li>
-      <li><a href="/game">게임</a></li>
-    </ul>
-  </nav>
+<body data-images='{{ photo_urls_json | safe }}'>
 
-  <!-- 로고 및 개요 -->
-  <header class="main-header">
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="로고" class="logo">
-    <h1>Trash Hunter</h1>
-    <p>분리배출은 지구를 지키는 작은 실천입니다. <br> 우리 모두 올바른 분리수거를 실천해요!</p>
-  </header>
+    <!-- 제목과 배경 로고 -->
+    <header class="main-header">
+      <div class="logo-bg">
+        <h1>Trash Hunter</h1>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="배경로고" class="bg-logo">
+      </div>
+    </header>
+  
+    <!-- 내비게이션 -->
+    <nav>
+      <ul>
+        <li><a href="/cardnews">카드 뉴스</a></li>
+        <li><a href="/">홈</a></li>
+        <li><a href="/game">미니 게임</a></li>
+      </ul>
+    </nav>
+  
+    <!-- ✨ 개요 내용만 따로 분리 -->
+    <section class="intro">
+      <p>분리배출은 지구를 지키는 작은 실천입니다.<br>우리 모두 올바른 분리수거를 실천해요!</p>
+    </section>
+  
+    <!-- 📸 온라인 사진전 박스 -->
+    <section class="photo-exhibition">
+      <div class="photo-box">
+        <h2>온라인 사진전</h2>
+        <div class="photo-frame">
+          <button id="prev">&#60;</button>
+          <img id="slide-image" src="" alt="전시 이미지">
+          <button id="next">&#62;</button>
+        </div>
+      </div>
+    </section>
+  
 
-  <!-- 온라인 사진전 -->
-  <section class="photo-exhibition">
-    <h2>📷 온라인 사진전</h2>
-    <div class="photo-frame">
-      <button id="prev">&#60;</button>
-      <img id="slide-image" src="{{ photo_urls[0] }}" alt="전시 이미지">
-      <button id="next">&#62;</button>
-    </div>
-  </section>
-
-  <!-- 슬라이드 기능 JS -->
+  <!-- 슬라이드 기능 -->
   <script>
-    const images = {{ photo_urls|tojson }};
-    let current = 0;
-    const slideImage = document.getElementById('slide-image');
-
-    document.getElementById('prev').onclick = () => {
-      current = (current - 1 + images.length) % images.length;
-      slideImage.src = images[current];
-    };
-
-    document.getElementById('next').onclick = () => {
-      current = (current + 1) % images.length;
-      slideImage.src = images[current];
-    };
-  </script>
-
+    try {
+      const imageData = document.body.dataset.images;
+      const images = JSON.parse(imageData);
+  
+      console.log("로드된 이미지 목록:", images);  // ← 콘솔에서 꼭 확인!
+      
+      if (!images || images.length === 0) {
+        console.warn("이미지가 없습니다.");
+      } else {
+        let current = 0;
+        const slideImage = document.getElementById('slide-image');
+        slideImage.src = images[0];
+  
+        document.getElementById('prev').onclick = () => {
+          current = (current - 1 + images.length) % images.length;
+          slideImage.src = images[current];
+        };
+        document.getElementById('next').onclick = () => {
+          current = (current + 1) % images.length;
+          slideImage.src = images[current];
+        };
+      }
+    } catch (e) {
+      console.error("이미지 로딩 중 오류 발생:", e);
+    }
+  </script>  
+  
 </body>
 </html>
