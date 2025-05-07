@@ -37,8 +37,20 @@ def cardnews():
     return render_template("cardnews.html")
 
 @app.route("/game")
-def game():
-    return render_template("game.html")
+def game_menu():
+    return render_template("game_menu.html")
+
+@app.route("/game/avoid")
+def game_avoid():
+    return render_template("game_avoid.html")
+
+@app.route("/game/recycle")
+def game_recycle():
+    return render_template("game_recycle.html")
+
+@app.route("/game/matchcard")
+def game_matchcard():
+    return render_template("game_matchcard.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

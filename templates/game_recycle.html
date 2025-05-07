@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>분리수거의 달인</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Gowun Dodum', sans-serif;
+      background: linear-gradient(to bottom, #dff7ff 0%, #b5e1f3 100%);
+      overflow-x: hidden;
+      color: #333;
+    }
+
+    .main-header {
+      background-color: #ffffff;
+      padding: 10px 0;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .logo-bg {
+      position: relative;
+      display: inline-block;
+    }
+
+    .main-header h1 {
+      font-size: 2.5em;
+      color: #1976d2;
+      position: relative;
+      z-index: 2;
+    }
+
+    .bg-logo {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      opacity: 0.08;
+      z-index: 1;
+    }
+
+    .main-nav {
+      background-color: #f8f8f8;
+      padding: 16px 0;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .main-nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+    }
+
+    .main-nav ul li a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      padding: 8px 20px;
+      font-size: 28px;
+      transition: color 0.3s, background-color 0.3s;
+    }
+
+    .main-nav ul li a:hover {
+      color: white;
+      background-color: #0077ff;
+      border-radius: 10px;
+    }
+
+    .intro-wrapper {
+      height: calc(100vh - 160px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+
+    .intro-screen {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      padding: 40px 20px;
+      margin: auto;
+    }
+
+    .intro-text {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .intro-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .start-button {
+      background-color: #f9a825;
+      color: white;
+      font-size: 18px;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .start-button span {
+      font-size: 20px;
+      margin-right: 6px;
+    }
+
+    .tip-box {
+      background-color: #2e7d32;
+      color: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .level-box {
+      background: #90caf9;
+      padding: 10px 15px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .score-box {
+      text-align: right;
+      font-size: 16px;
+    }
+
+    .score-change {
+      display: block;
+      color: #1976d2;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .fall-zone {
+      position: relative;
+      min-height: 200px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      margin: 10px 0 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .trash {
+      font-size: 32px;
+      background: #fff9c4;
+      border: 2px solid #fdd835;
+      border-radius: 12px;
+      padding: 10px;
+      cursor: grab;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .bins {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      gap: 10px;
+    }
+
+    .bin {
+      flex: 1;
+      max-width: 120px;
+      height: 100px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .bin[data-accept="metal"]   { background-color: #1976d2; }
+    .bin[data-accept="glass"]   { background-color: #fbc02d; }
+    .bin[data-accept="plastic"] { background-color: #388e3c; }
+    .bin[data-accept="paper"]   { background-color: #ff5e5e; }
+
+    .game-over {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #c62828;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo-bg">
+      <h1>Trash Hunter</h1>
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="배경로고" class="bg-logo">
+    </div>
+  </header>
+
+  <nav class="main-nav">
+    <ul>
+      <li><a href="/cardnews">카드 뉴스</a></li>
+      <li><a href="/">홈</a></li>
+      <li><a href="/game">미니 게임</a></li>
+    </ul>
+  </nav>
+
+  <!-- ✅ 인트로 화면 -->
+  <div class="intro-wrapper">
+    <!-- 인트로 -->
+    <div class="intro-screen" id="intro">
+      <div class="intro-box">
+        <p class="intro-text">생활폐기물 중에 재활용되는 물품이 얼마나 될까요?</p>
+        <h2 class="intro-title">여러분의 능력을 보여주세요!!</h2>
+        <button class="start-button" id="start-btn"><span>▶</span> START</button>
+        <div class="tip-box">
+          <strong>GAME TIP</strong><br />
+          주어진 시간 내에 모든 분리수거 용품을 적절한 수거함에 담는 게임입니다.<br />
+          빠르게 처리할수록 보너스 점수를 받을 수 있어요.
+        </div>
+      </div>
+    </div>
+
+  <!-- ✅ 게임 화면 -->
+  <div class="game-container" id="game" style="display: none;">
+    <div class="game-header">
+      <div class="level-box">1단계</div>
+      <div class="center-logo"></div>
+      <div class="score-box">
+        <span class="score-change" id="score-change">+0</span>
+        <span class="score" id="score">0점</span>
+      </div>
+    </div>
+
+    <div class="fall-zone" id="trash-container"></div>
+
+    <div class="bins">
+      <div class="bin" data-accept="paper">종이</div>
+      <div class="bin" data-accept="metal">캔</div>
+      <div class="bin" data-accept="glass">유리</div>
+      <div class="bin" data-accept="plastic">플라스틱</div>
+    </div>
+
+    <div id="game-over" class="game-over"></div>
+  </div>
+
+  <script>
+    const intro = document.getElementById("intro");
+    const game = document.getElementById("game");
+    const startBtn = document.getElementById("start-btn");
+
+    const trashContainer = document.getElementById("trash-container");
+    const scoreDisplay = document.getElementById("score");
+    const scoreChange = document.getElementById("score-change");
+    const gameOver = document.getElementById("game-over");
+
+    let score = 0;
+    let timeLeft = 20;
+    let timer;
+
+    startBtn.addEventListener("click", () => {
+      intro.style.display = "none";
+      game.style.display = "block";
+      startGame();
+    });
+
+    function startGame() {
+      score = 0;
+      timeLeft = 20;
+      updateScore(0);
+      trashContainer.innerHTML = "";
+      gameOver.textContent = "";
+
+      for (let i = 0; i < 5; i++) addTrash();
+
+      setUpBins();
+      timer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          gameOver.textContent = `게임 종료! 당신의 점수는 ${score}점입니다.`;
+        }
+      }, 1000);
+    }
+
+    function updateScore(amount) {
+      score += amount;
+      scoreDisplay.textContent = `${score}점`;
+      scoreChange.textContent = (amount >= 0 ? "+" : "") + amount;
+    }
+
+    function addTrash() {
+      const list = [
+        { emoji: "📄", type: "paper" },
+        { emoji: "🥤", type: "plastic" },
+        { emoji: "🥫", type: "metal" },
+        { emoji: "🍾", type: "glass" },
+      ];
+      const item = list[Math.floor(Math.random() * list.length)];
+
+      const el = document.createElement("div");
+      el.className = "trash";
+      el.textContent = item.emoji;
+      el.dataset.type = item.type;
+      el.draggable = true;
+
+      el.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("type", el.dataset.type);
+        e.dataTransfer.setData("id", el.textContent);
+      });
+
+      trashContainer.appendChild(el);
+    }
+
+    function setUpBins() {
+      document.querySelectorAll(".bin").forEach(bin => {
+        bin.addEventListener("dragover", e => e.preventDefault());
+        bin.addEventListener("drop", e => {
+          e.preventDefault();
+          const type = e.dataTransfer.getData("type");
+          const id = e.dataTransfer.getData("id");
+          const el = [...document.querySelectorAll(".trash")].find(t => t.textContent === id);
+
+          if (type === bin.dataset.accept) {
+            updateScore(10);
+          } else {
+            updateScore(-5);
+          }
+          if (el) el.remove();
+          addTrash();
+        });
+      });
+    }
+  </script>
+</body>
+</html>

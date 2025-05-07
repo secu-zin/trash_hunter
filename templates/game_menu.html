@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>미니게임 목록</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .game-list {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      margin: 100px auto;
+      max-width: 500px;
+    }
+    .game-list a {
+      background: #74b9ff;
+      color: white;
+      text-decoration: none;
+      font-size: 1.5rem;
+      padding: 20px;
+      border-radius: 15px;
+      transition: 0.3s;
+    }
+    .game-list a:hover {
+      background: #0984e3;
+    }
+  </style>
+</head>
+<body>
+<!-- game_menu.html -->
+
+<!-- ✅ 기존 <body> 안에 아래 코드로 대체 -->
+
+    <header class="main-header">
+        <div class="logo-bg">
+          <h1>Trash Hunter</h1>
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="배경로고" class="bg-logo">
+        </div>
+      </header>
+      
+      <nav>
+        <ul>
+          <li><a href="/cardnews">카드 뉴스</a></li>
+          <li><a href="/">홈</a></li>
+          <li><a href="/game">미니 게임</a></li>
+        </ul>
+      </nav>
+      
+
+  <section class="game-list">
+    <a href="/game/avoid">일반쓰레기 피하기 게임</a>
+    <a href="/game/recycle">분리배출 게임</a>
+    <a href="/game/matchcard">분리법 카드 맞추기 게임</a>
+  </section>  
+</body>
+</html>

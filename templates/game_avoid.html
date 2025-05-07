@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trash Hunter - 분리수거 게임</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo-bg">
+      <h1>Trash Hunter</h1>
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="배경로고" class="bg-logo">
+    </div>
+  </header>
+  
+  <nav>
+    <ul>
+      <li><a href="/cardnews">카드 뉴스</a></li>
+      <li><a href="/">홈</a></li>
+      <li><a href="/game">미니 게임</a></li>
+    </ul>
+  </nav>
+
+  <div id="start-screen">
+    <h2>재활용 가능한 쓰레기만 받아주세요!</h2>
+    <button id="start-btn">START</button>
+  </div>
+
+  <div id="game">
+    <div id="score">점수: 0</div>
+    <div id="lives">❤️❤️❤️❤️❤️</div>
+    <div id="timer">남은 시간: 20초</div>
+    <div class="player" id="player">🧺</div>
+  </div>
+
+  <div id="game-over" style="display: none;">
+    <div id="final-message"></div>
+    <button id="restart-btn">다시 시작</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('start-btn');
+    const startScreen = document.getElementById('start-screen');
+    const game = document.getElementById('game');
+    const player = document.getElementById('player');
+    const scoreBoard = document.getElementById('score');
+    const livesBoard = document.getElementById('lives');
+    const gameOverScreen = document.getElementById('game-over');
+    const finalMessage = document.getElementById('final-message');
+    const restartBtn = document.getElementById('restart-btn');
+    const timerBoard = document.getElementById('timer');
+
+    let score = 0;
+    let lives = 5;
+    let playerX = 400;
+    let gameRunning = false;
+    let gameTime = 20;
+    let totalItems = 0;
+    let correctItems = 0;
+
+    const goodItems = [
+      { emoji: '🧴', label: '플라스틱' },
+      { emoji: '🫙', label: '유리병' },
+      { emoji: '📦', label: '종이' },
+      { emoji: '🔋', label: '건전지' },
+      { emoji: '🥫', label: '캔' }
+    ];
+
+    const badItems = [
+      { emoji: '🦴', label: '음식물 뼈' },
+      { emoji: '🪥', label: '칫솔' },
+      { emoji: '🧻', label: '휴지' },
+      { emoji: '🧦', label: '양말' },
+      { emoji: '👞', label: '신발' },
+      { emoji: '💄', label: '화장품' }
+    ];
+
+    document.addEventListener('keydown', e => {
+      if (!gameRunning) return;
+      const speed = 30;
+      if (e.key === 'ArrowLeft') playerX = Math.max(0, playerX - speed);
+      else if (e.key === 'ArrowRight') playerX = Math.min(760, playerX + speed);
+      player.style.left = `${playerX}px`;
+    });
+
+    function showFeedback(x, y, text, color) {
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.textContent = text;
+      fb.style.left = `${x}px`;
+      fb.style.top = `${y}px`;
+      fb.style.color = color;
+      game.appendChild(fb);
+      setTimeout(() => fb.remove(), 1000);
+    }
+
+    function createItem() {
+      if (!gameRunning) return;
+      const item = document.createElement('div');
+      item.classList.add('item');
+      const isGood = Math.random() > 0.4;
+      const data = isGood
+        ? goodItems[Math.floor(Math.random() * goodItems.length)]
+        : badItems[Math.floor(Math.random() * badItems.length)];
+      item.innerHTML = `${data.emoji}<div class="item-label">${data.label}</div>`;
+      item.dataset.good = isGood;
+      const x = Math.random() * 760;
+      item.style.left = `${x}px`;
+      game.appendChild(item);
+      let y = 0;
+      const fallSpeed = 1.5 + Math.random() * 2.5;
+      const fall = setInterval(() => {
+        if (!gameRunning) return clearInterval(fall);
+        y += fallSpeed;
+        item.style.top = `${y}px`;
+        const itemX = x;
+        const playerY = game.offsetHeight - 100;
+        const itemBottom = y + 30;
+        if (itemBottom >= playerY && itemX >= playerX - 50 && itemX <= playerX + 50) {
+          clearInterval(fall);
+          game.removeChild(item);
+          totalItems++;
+          if (item.dataset.good === 'true') {
+            score++;
+            correctItems++;
+            showFeedback(itemX, y, '+1 ✔️', 'green');
+          } else {
+            lives--;
+            showFeedback(itemX, y, '❌', 'red');
+          }
+          updateUI();
+        }
+        if (y > game.offsetHeight) {
+          clearInterval(fall);
+          game.removeChild(item);
+        }
+      }, 16);
+    }
+
+    function updateUI() {
+      scoreBoard.textContent = `점수: ${score}`;
+      livesBoard.textContent = '❤️'.repeat(lives);
+      if (lives <= 0) endGame();
+    }
+
+    function updateTimer() {
+      timerBoard.textContent = `남은 시간: ${gameTime}초`;
+      if (gameTime <= 0) endGame();
+    }
+
+    function endGame() {
+      gameRunning = false;
+      gameOverScreen.style.display = 'flex';
+      const percent = totalItems > 0 ? Math.round((correctItems / totalItems) * 100) : 0;
+      finalMessage.innerHTML = `게임 종료!<br>최종 점수: ${score}<br>재활용 성공률: ${percent}%`;
+    }
+
+    function startGame() {
+      score = 0;
+      lives = 5;
+      gameTime = 40;
+      totalItems = 0;
+      correctItems = 0;
+      updateUI();
+      updateTimer();
+      gameRunning = true;
+      startScreen.style.display = 'none';
+      gameOverScreen.style.display = 'none';
+      player.style.left = `${playerX}px`;
+      const loop = setInterval(() => {
+        if (!gameRunning) return clearInterval(loop);
+        createItem();
+      }, 900);
+      const countdown = setInterval(() => {
+        if (!gameRunning) return clearInterval(countdown);
+        gameTime--;
+        updateTimer();
+      }, 1000);
+    }
+
+    startBtn.onclick = startGame;
+    restartBtn.onclick = startGame;
+  </script>
+</body>
+</html>
