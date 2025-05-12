@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 인증</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='cardnews_style.css') }}">
+</head>
+<body>
+  <div class="form-container">
+    <h1>🔐 관리자 인증</h1>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="POST">
+      <input type="password" name="password" placeholder="비밀번호 입력" required>
+      <button type="submit">입장</button>
+    </form>
+    <a href="{{ url_for('index') }}" class="back-link">← 메인으로 돌아가기</a>
+  </div>
+</body>
+</html>
+
+

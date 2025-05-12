@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recycle Match – 분리수거 기억력 게임</title>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background: linear-gradient(135deg, #ffe0f0, #e0f7fa, #f1ffe7);
+      text-align: center;
+      padding: 20px;
+      padding-top: 100px;
+      color: #333;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      padding: 10px 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 40px;
+      font-weight: 900;
+      color: #222;
+    }
+
+    #controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    #pause-warning {
+      display: none;
+      font-size: 14px;
+      color: #e03131;
+      font-weight: bold;
+    }
+
+    #button-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    #timer {
+      font-weight: bold;
+      font-size: 18px;
+      background: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    button {
+      padding: 10px 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    #start-button { background-color: #4dabf7; color: white; }
+    #pause-button { background-color: #ffa94d; color: white; }
+    #hint-button  { background-color: #40c057; color: white; }
+    #restart-button {
+      background-color: #845ef7;
+      color: white;
+      display: none;
+      margin-top: 20px;
+    }
+
+    button:hover { filter: brightness(1.1); }
+
+    .board {
+      display: none;
+      grid-template-columns: repeat(5, 160px);
+      gap: 16px;
+      justify-content: center;
+      margin-top: 25px;
+    }
+
+    .card {
+      border-radius: 10px;
+      width: 160px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 10px;
+      box-sizing: border-box;
+      user-select: none;
+      position: relative;
+      color: #1c1c1c;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      border: 2px solid #dee2e6;
+    }
+
+    .card:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .item-card {
+      background: linear-gradient(to bottom right, #d0ebff, #a5d8ff);
+    }
+
+    .method-card {
+      background: linear-gradient(to bottom right, #fff3bf, #ffe066);
+    }
+
+    .card.matched {
+      background-color: #b2f2bb;
+      cursor: default;
+    }
+
+    .card.revealed {
+      background-color: #ffffff;
+      border: 2px solid #4dabf7;
+      font-size: 16px;
+      color: #000;
+    }
+
+    #feedback-overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      padding: 20px 40px;
+      border-radius: 15px;
+      display: none;
+      z-index: 2000;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <ul>
+        <li><a href="/cardnews">카드 뉴스</a></li>
+        <li><a href="/">홈</a></li>
+        <li><a href="/game">미니 게임</a></li>
+    </ul>
+  </nav>
+
+  <h1>🎮 Recycle Match 🎮</h1>
+
+  <div id="controls">
+    <div id="pause-warning">⏳ 시간은 계속 흐르고 있어요!</div>
+    <div id="timer">⏱ 시간: 0초</div>
+    <div id="button-group">
+      <button id="start-button">게임 시작</button>
+      <button id="pause-button" disabled>⏸ 일시정지</button>
+      <button id="hint-button" disabled>💡 힌트 보기 (3회 남음)</button>
+    </div>
+  </div>
+
+  <div id="game-board" class="board"></div>
+  <div id="feedback-overlay"></div>
+  <button id="restart-button">🔄 다시하기</button>
+
+  <script>
+    const pairs = [
+    ["📄 코팅된 종이", "일반쓰레기로 분류"],
+    ["🍦 아이스크림 포장재", "젤 제거 후 포장재는 분리배출"],
+    ["📦 택배 상자", "테이프 제거 후 종이류로 배출"],
+    ["🧴 샴푸 용기", "내용물 제거 후 헹군 뒤 플라스틱류 배출"],
+    ["🥡 배달 음식 용기", "음식물 제거 후 세척하여 플라스틱 배출"],
+    ["❄️ 드라이아이스", "신문지에 싸서 일반쓰레기로 배출 (밀폐 용기 금지)"],
+    ["💨 헤어스프레이", "가스 완전 제거 후 구멍 뚫어 캔류 배출"],
+    ["🧯 라이터", "내용물 완전히 제거 후 캔류 또는 일반쓰레기로 배출 (지역별 확인 필요)"],
+    ["🪪 주민등록증", "가위로 자른 뒤 개인정보 가린 후 일반쓰레기로 배출"],
+    ["📱 고장 난 휴대폰", "폐가전 수거함 또는 주민센터 배출"]
+    ];
+
+    let cards = [], revealed = [], matchedCount = 0;
+    let canClick = false, paused = false;
+    let startTime = null, timerInterval = null;
+    let hintCount = 3;
+
+    const board = document.getElementById("game-board");
+    const timerEl = document.getElementById("timer");
+    const startBtn = document.getElementById("start-button");
+    const pauseBtn = document.getElementById("pause-button");
+    const hintBtn = document.getElementById("hint-button");
+    const pauseWarning = document.getElementById("pause-warning");
+    const feedbackOverlay = document.getElementById("feedback-overlay");
+    const restartBtn = document.getElementById("restart-button");
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function setupGame() {
+      const flat = pairs.flat();
+      const shuffled = shuffle([...flat]);
+      cards = shuffled.map(text => {
+        const isItem = pairs.some(pair => pair[0] === text);
+        return { text, matched: false, type: isItem ? "item" : "method" };
+      });
+
+      board.innerHTML = "";
+      board.style.display = "grid";
+      matchedCount = 0;
+      revealed = [];
+      canClick = true;
+      paused = false;
+      hintCount = 3;
+      pauseWarning.style.display = "none";
+      feedbackOverlay.style.display = "none";
+      restartBtn.style.display = "none";
+
+      hintBtn.innerText = `💡 힌트 보기 (3회 남음)`;
+      hintBtn.disabled = false;
+      pauseBtn.disabled = false;
+      pauseBtn.innerText = "⏸ 일시정지";
+
+      cards.forEach((card, i) => {
+        const div = document.createElement("div");
+        div.className = `card ${card.type === "item" ? "item-card" : "method-card"}`;
+        div.dataset.index = i;
+        div.innerText = card.type === "item" ? "물건" : "방법";
+        div.addEventListener("click", handleCardClick);
+        board.appendChild(div);
+      });
+
+      clearInterval(timerInterval);
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (!paused) {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        timerEl.innerText = `⏱ 시간: ${elapsed}초`;
+      }
+    }
+
+    function togglePause() {
+      paused = !paused;
+      pauseBtn.innerText = paused ? "▶️ 계속하기" : "⏸ 일시정지";
+      pauseWarning.style.display = paused ? "block" : "none";
+    }
+
+    function showFeedback(text, type) {
+      feedbackOverlay.innerText = text;
+      feedbackOverlay.style.backgroundColor =
+        type === "correct" ? "rgba(46, 204, 113, 0.9)"
+        : type === "wrong" ? "rgba(231, 76, 60, 0.9)"
+        : "rgba(52, 152, 219, 0.9)";
+      feedbackOverlay.style.display = "block";
+
+      if (type === "correct" || type === "wrong") {
+        setTimeout(() => {
+          feedbackOverlay.style.display = "none";
+        }, 1500);
+      }
+    }
+
+    function handleCardClick(e) {
+      if (!canClick || paused) return;
+
+      const index = e.currentTarget.dataset.index;
+      const card = cards[index];
+      const cardEl = e.currentTarget;
+
+      if (card.matched || cardEl.classList.contains("revealed") || revealed.length === 2) return;
+
+      cardEl.classList.add("revealed");
+      cardEl.innerText = card.text;
+      revealed.push({ index, cardEl });
+
+      if (revealed.length === 2) {
+        canClick = false;
+        const [a, b] = revealed.map(r => r.cardEl.innerText);
+        const isMatch = pairs.some(pair => pair.includes(a) && pair.includes(b) && a !== b);
+
+        if (isMatch) {
+          revealed.forEach(r => {
+            r.cardEl.classList.add("matched");
+            cards[r.index].matched = true;
+          });
+          matchedCount++;
+          showFeedback("✅ 맞았어요!", "correct");
+          revealed = [];
+          canClick = true;
+        } else {
+          showFeedback("❌ 틀렸어요...", "wrong");
+          setTimeout(() => {
+            revealed.forEach(r => {
+              r.cardEl.classList.remove("revealed");
+              r.cardEl.innerText = cards[r.index].type === "item" ? "물건" : "방법";
+            });
+            revealed = [];
+            canClick = true;
+          }, 1000);
+        }
+
+        if (matchedCount === pairs.length) {
+          clearInterval(timerInterval);
+          const totalTime = Math.floor((Date.now() - startTime) / 1000);
+          showFeedback(`🎉 게임 완료! 걸린 시간: ${totalTime}초`, "done");
+          restartBtn.style.display = "inline-block";
+          pauseBtn.disabled = true;
+          hintBtn.disabled = true;
+        }
+      }
+    }
+
+    function showHint() {
+      if (hintCount <= 0 || paused) return;
+
+      const unmatched = cards
+        .map((card, i) => ({ card, i }))
+        .filter(obj => !obj.card.matched && !revealed.find(r => r.index === obj.i));
+
+      let first = null, second = null;
+      for (let i = 0; i < unmatched.length; i++) {
+        for (let j = i + 1; j < unmatched.length; j++) {
+          const a = unmatched[i].card.text;
+          const b = unmatched[j].card.text;
+          if (pairs.some(pair => pair.includes(a) && pair.includes(b) && a !== b)) {
+            first = unmatched[i];
+            second = unmatched[j];
+            break;
+          }
+        }
+        if (first && second) break;
+      }
+
+      if (first && second) {
+        const el1 = board.children[first.i];
+        const el2 = board.children[second.i];
+        el1.innerText = first.card.text;
+        el2.innerText = second.card.text;
+        el1.classList.add("revealed");
+        el2.classList.add("revealed");
+        canClick = false;
+        setTimeout(() => {
+          el1.innerText = first.card.type === "item" ? "물건" : "방법";
+          el2.innerText = second.card.type === "item" ? "물건" : "방법";
+          el1.classList.remove("revealed");
+          el2.classList.remove("revealed");
+          canClick = true;
+        }, 1000);
+
+        hintCount--;
+        hintBtn.innerText = `💡 힌트 보기 (${hintCount}회 남음)`;
+        if (hintCount <= 0) hintBtn.disabled = true;
+      }
+    }
+
+    startBtn.addEventListener("click", setupGame);
+    pauseBtn.addEventListener("click", togglePause);
+    hintBtn.addEventListener("click", showHint);
+    restartBtn.addEventListener("click", setupGame);
+  </script>
+</body>
+</html>

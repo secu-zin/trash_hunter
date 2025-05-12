@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ post[0] }} - 카드뉴스</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='cardnews_style.css') }}">
+</head>
+<body>
+  <div class="detail-wrapper">
+    <div class="detail-card">
+      <h1 class="detail-title">{{ post[0] }}</h1>
+      <p class="detail-date">작성일: {{ post[2][:10] }}</p>
+
+      <div class="detail-images">
+        {% for img in images %}
+          <img src="{{ url_for('static', filename='uploads/' + img[0]) }}" alt="카드 이미지">
+        {% endfor %}
+      </div>
+
+      {% if is_admin %}
+        <div class="detail-actions">
+          <a href="{{ url_for('edit', post_id=post[1]) }}">✏️ 수정</a>
+          <a href="{{ url_for('delete', post_id=post[1]) }}" onclick="return confirm('정말 삭제하시겠습니까?');">🗑 삭제</a>
+        </div>
+      {% endif %}
+
+      <div class="detail-back">
+        <a href="{{ url_for('index') }}">← 목록으로 돌아가기</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+

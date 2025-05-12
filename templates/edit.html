@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>카드뉴스 수정</title>
+</head>
+<body>
+  <h1>카드뉴스 수정</h1>
+  <form method="POST" enctype="multipart/form-data">
+    <label>제목:<br>
+      <input type="text" name="title" value="{{ title }}" required>
+    </label><br><br>
+
+    <label>새 이미지 업로드 (기존 이미지 모두 대체):<br>
+      <input type="file" name="images" accept="image/*" multiple required>
+    </label><br><br>
+
+    <button type="submit">수정 완료</button>
+  </form>
+  <br>
+  <a href="{{ url_for('detail', post_id=post_id) }}">← 돌아가기</a>
+</body>
+</html>

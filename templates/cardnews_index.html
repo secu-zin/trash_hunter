@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>카드뉴스 게시판</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='cardnews_style.css') }}">
+</head>
+<body>
+  <h1 class="title">카드뉴스</h1>
+  <div class="top-bar">
+    <a href="{{ url_for('auth') }}" class="write-button">+ 새 카드뉴스 작성</a>
+  </div>
+  <div class="card-container">
+    {% for post in posts %}
+      <a href="{{ url_for('detail', post_id=post[0]) }}" class="card">
+        <img src="{{ url_for('static', filename='uploads/' + post[3]) }}" alt="썸네일">
+        <div class="card-content">
+          <div class="card-title">{{ post[1] }}</div>
+          <div class="card-date">{{ post[2][:10] }}</div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</body>
+</html>
+
