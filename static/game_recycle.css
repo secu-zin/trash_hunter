@@ -1,0 +1,223 @@
+/* === 공통 설정 === */
+body {
+  margin: 0;
+  font-family: 'Gowun Dodum', sans-serif;
+  background: linear-gradient(to bottom, #dff7ff 0%, #b5e1f3 100%);
+  overflow-x: hidden;
+  color: #333;
+}
+
+.header-wrapper {
+  background-color: white;
+  padding-bottom: 10px;
+}
+
+.main-header {
+  text-align: center;
+}
+
+/* === 로고, 제목 관련 === */
+.logo {
+  width: 100px;
+  margin-top: 20px;
+}
+
+.logo-bg {
+  position: relative;
+  display: inline-block;
+  margin-top: 40px; /* ✅ 카드뉴스와 게임 모두 동일하게 */
+}
+
+.logo-bg h1 {
+  font-size: 2.5em;
+  position: relative;
+  z-index: 2;
+  color: black;
+}
+
+.bg-logo {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  opacity: 0.2;
+  z-index: 1;
+}
+
+/* === 네비게이션 바 === */
+nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  padding: 0 15px;
+  transition: color 0.3s;
+  font-size: 30px;
+}
+
+nav ul li a:hover {
+  color: #0077ff;
+}
+
+
+/* === 인트로 화면 === */
+.intro-wrapper {
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* ✅ flex-start → center로 바꿔야 상단 정렬 */
+  padding: 40px 20px 60px;
+  box-sizing: border-box;
+}
+
+.intro-screen {
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  padding: 40px 25px;
+  margin: auto;
+}
+
+.intro-text {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.intro-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.start-button {
+  background-color: #f9a825;
+  color: white;
+  font-size: 18px;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.start-button span {
+  font-size: 20px;
+  margin-right: 6px;
+}
+
+.tip-box {
+  background-color: #2e7d32;
+  color: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* === 게임 화면 === */
+.game-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 40px auto 60px auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.level-box {
+  background: #90caf9;
+  padding: 10px 15px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.score-box {
+  text-align: right;
+  font-size: 16px;
+}
+
+.score-change {
+  display: block;
+  color: #1976d2;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.fall-zone {
+  position: relative;
+  min-height: 200px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  margin: 10px 0 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+}
+
+.trash {
+  font-size: 32px;
+  background: #fff9c4;
+  border: 2px solid #fdd835;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: grab;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bins {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 10px;
+}
+
+.bin {
+  flex: 1;
+  max-width: 120px;
+  height: 100px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.bin[data-accept="metal"]   { background-color: #1976d2; }
+.bin[data-accept="glass"]   { background-color: #fbc02d; }
+.bin[data-accept="plastic"] { background-color: #388e3c; }
+.bin[data-accept="paper"]   { background-color: #ff5e5e; }
+
+.game-over {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+  color: #c62828;
+  font-size: 18px;
+}

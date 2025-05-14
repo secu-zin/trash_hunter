@@ -6,7 +6,23 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='cardnews_style.css') }}">
 </head>
 <body>
-  <h1 class="title">카드뉴스</h1>
+
+  <!-- ✅ 공통 로고 & 내비게이션 -->
+<header class="main-header">
+  <div class="logo-bg">
+    <h1>Trash Hunter</h1>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="배경로고" class="bg-logo">
+  </div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="/cardnews">카드 뉴스</a></li>
+    <li><a href="/">홈</a></li>
+    <li><a href="/game">미니 게임</a></li>
+  </ul>
+</nav>
+
   <div class="top-bar">
     <a href="{{ url_for('auth') }}" class="write-button">+ 새 카드뉴스 작성</a>
   </div>
