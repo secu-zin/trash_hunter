@@ -166,6 +166,25 @@
       display: none;
       z-index: 2000;
     }
+
+    #countdown {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 100px;
+      font-weight: bold;
+      color: red;
+      z-index: 3000;
+      display: none;
+      animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5) translate(-50%, -50%); opacity: 0; }
+      50% { transform: scale(1.2) translate(-50%, -50%); opacity: 1; }
+      100% { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -186,32 +205,28 @@
     <div id="button-group">
       <button id="start-button">게임 시작</button>
       <button id="pause-button" disabled>⏸ 일시정지</button>
-      <button id="hint-button" disabled>💡 힌트 보기 (3회 남음)</button>
+      <button id="hint-button" disabled>💡 힌트 보기 (1회 남음)</button>
     </div>
   </div>
 
   <div id="game-board" class="board"></div>
   <div id="feedback-overlay"></div>
+  <div id="countdown"></div>
   <button id="restart-button">🔄 다시하기</button>
 
   <script>
     const pairs = [
-    ["📄 코팅된 종이", "일반쓰레기로 분류"],
-    ["🍦 아이스크림 포장재", "젤 제거 후 포장재는 분리배출"],
-    ["📦 택배 상자", "테이프 제거 후 종이류로 배출"],
-    ["🧴 샴푸 용기", "내용물 제거 후 헹군 뒤 플라스틱류 배출"],
-    ["🥡 배달 음식 용기", "음식물 제거 후 세척하여 플라스틱 배출"],
-    ["❄️ 드라이아이스", "신문지에 싸서 일반쓰레기로 배출 (밀폐 용기 금지)"],
-    ["💨 헤어스프레이", "가스 완전 제거 후 구멍 뚫어 캔류 배출"],
-    ["🧯 라이터", "내용물 완전히 제거 후 캔류 또는 일반쓰레기로 배출 (지역별 확인 필요)"],
-    ["🪪 주민등록증", "가위로 자른 뒤 개인정보 가린 후 일반쓰레기로 배출"],
-    ["📱 고장 난 휴대폰", "폐가전 수거함 또는 주민센터 배출"]
+      ["🍦 아이스크림 포장재", "젤 제거 후 포장재는 분리배출"],
+      ["📦 택배 상자", "테이프 제거 후 종이류로 배출"],
+      ["🥡 배달 음식 용기", "음식물 제거 후 세척하여 플라스틱 배출"],
+      ["❄️ 드라이아이스", "신문지에 싸서 일반쓰레기로 배출 (밀폐 용기 금지)"],
+      ["💨 헤어스프레이", "가스 완전 제거 후 구멍 뚫어 캔류 배출"],
     ];
 
     let cards = [], revealed = [], matchedCount = 0;
     let canClick = false, paused = false;
     let startTime = null, timerInterval = null;
-    let hintCount = 3;
+    let hintCount = 1;
 
     const board = document.getElementById("game-board");
     const timerEl = document.getElementById("timer");
@@ -221,6 +236,7 @@
     const pauseWarning = document.getElementById("pause-warning");
     const feedbackOverlay = document.getElementById("feedback-overlay");
     const restartBtn = document.getElementById("restart-button");
+    const countdownEl = document.getElementById("countdown");
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -242,30 +258,50 @@
       board.style.display = "grid";
       matchedCount = 0;
       revealed = [];
-      canClick = true;
+      canClick = false;
       paused = false;
-      hintCount = 3;
+      hintCount = 1;
       pauseWarning.style.display = "none";
       feedbackOverlay.style.display = "none";
       restartBtn.style.display = "none";
 
-      hintBtn.innerText = `💡 힌트 보기 (3회 남음)`;
+      hintBtn.innerText = `💡 힌트 보기 (1회 남음)`;
       hintBtn.disabled = false;
       pauseBtn.disabled = false;
       pauseBtn.innerText = "⏸ 일시정지";
 
       cards.forEach((card, i) => {
         const div = document.createElement("div");
-        div.className = `card ${card.type === "item" ? "item-card" : "method-card"}`;
+        div.className = `card ${card.type === "item" ? "item-card" : "method-card"} revealed`;
         div.dataset.index = i;
-        div.innerText = card.type === "item" ? "물건" : "방법";
+        div.innerText = card.text;
         div.addEventListener("click", handleCardClick);
         board.appendChild(div);
       });
 
-      clearInterval(timerInterval);
-      startTime = Date.now();
-      timerInterval = setInterval(updateTimer, 1000);
+      let count = 3;
+      countdownEl.style.display = "block";
+      countdownEl.innerText = count;
+      const countdownInterval = setInterval(() => {
+        count--;
+        countdownEl.innerText = count;
+        countdownEl.style.animation = 'none';
+        countdownEl.offsetHeight; // force reflow
+        countdownEl.style.animation = null;
+        if (count === 0) {
+          clearInterval(countdownInterval);
+          countdownEl.style.display = "none";
+
+          Array.from(board.children).forEach((cardEl, i) => {
+            cardEl.classList.remove("revealed");
+            cardEl.innerText = cards[i].type === "item" ? "물건" : "방법";
+          });
+
+          canClick = true;
+          startTime = Date.now();
+          timerInterval = setInterval(updateTimer, 1000);
+        }
+      }, 1000);
     }
 
     function updateTimer() {
@@ -396,3 +432,4 @@
   </script>
 </body>
 </html>
+
