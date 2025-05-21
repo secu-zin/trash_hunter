@@ -4,241 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>분리수거의 달인</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Gowun Dodum', sans-serif;
-      background: linear-gradient(to bottom, #dff7ff 0%, #b5e1f3 100%);
-      overflow-x: hidden;
-      color: #333;
-    }
-
-    .main-header {
-      background-color: #ffffff;
-      padding: 10px 0;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .logo-bg {
-      position: relative;
-      display: inline-block;
-    }
-
-    .main-header h1 {
-      font-size: 2.5em;
-      color: #1976d2;
-      position: relative;
-      z-index: 2;
-    }
-
-    .bg-logo {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      opacity: 0.08;
-      z-index: 1;
-    }
-
-    .main-nav {
-      background-color: #f8f8f8;
-      padding: 16px 0;
-      text-align: center;
-      border-bottom: 1px solid #ccc;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-    }
-
-    .main-nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      gap: 60px;
-    }
-
-    .main-nav ul li a {
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-      padding: 8px 20px;
-      font-size: 28px;
-      transition: color 0.3s, background-color 0.3s;
-    }
-
-    .main-nav ul li a:hover {
-      color: white;
-      background-color: #0077ff;
-      border-radius: 10px;
-    }
-
-    .intro-wrapper {
-      height: calc(100vh - 160px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-
-    .intro-screen {
-      width: 100%;
-      max-width: 500px;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      text-align: center;
-      padding: 40px 20px;
-      margin: auto;
-    }
-
-    .intro-text {
-      font-size: 16px;
-      margin-bottom: 10px;
-      color: #333;
-    }
-
-    .intro-title {
-      font-size: 22px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .start-button {
-      background-color: #f9a825;
-      color: white;
-      font-size: 18px;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-
-    .start-button span {
-      font-size: 20px;
-      margin-right: 6px;
-    }
-
-    .tip-box {
-      background-color: #2e7d32;
-      color: #fff;
-      padding: 15px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .game-container {
-      width: 100%;
-      max-width: 800px;
-    }
-
-    .game-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 15px;
-    }
-
-    .level-box {
-      background: #90caf9;
-      padding: 10px 15px;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .score-box {
-      text-align: right;
-      font-size: 16px;
-    }
-
-    .score-change {
-      display: block;
-      color: #1976d2;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .fall-zone {
-      position: relative;
-      min-height: 200px;
-      background-color: rgba(255, 255, 255, 0.7);
-      border-radius: 20px;
-      margin: 10px 0 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      padding: 20px;
-    }
-
-    .trash {
-      font-size: 32px;
-      background: #fff9c4;
-      border: 2px solid #fdd835;
-      border-radius: 12px;
-      padding: 10px;
-      cursor: grab;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .bins {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      gap: 10px;
-    }
-
-    .bin {
-      flex: 1;
-      max-width: 120px;
-      height: 100px;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-    }
-
-    .bin[data-accept="metal"]   { background-color: #1976d2; }
-    .bin[data-accept="glass"]   { background-color: #fbc02d; }
-    .bin[data-accept="plastic"] { background-color: #388e3c; }
-    .bin[data-accept="paper"]   { background-color: #ff5e5e; }
-
-    .game-over {
-      text-align: center;
-      margin-top: 20px;
-      font-weight: bold;
-      color: #c62828;
-      font-size: 18px;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='game_recycle.css') }}">
 </head>
 <body>
-  <header class="main-header">
-    <div class="logo-bg">
-      <h1>Trash Hunter</h1>
-      <img src="{{ url_for('static', filename='logo.png') }}" alt="배경로고" class="bg-logo">
-    </div>
-  </header>
+    <!-- ✅ 흰색 배경 구간 전체를 감쌈 -->
+  <div class="header-wrapper">
+    <header class="main-header">
+      <div class="logo-bg">
+        <h1>Trash Hunter</h1>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="배경로고" class="bg-logo">
+      </div>
+    </header>
 
-  <nav class="main-nav">
-    <ul>
-      <li><a href="/cardnews">카드 뉴스</a></li>
-      <li><a href="/">홈</a></li>
-      <li><a href="/game">미니 게임</a></li>
-    </ul>
-  </nav>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/cardnews">카드 뉴스</a></li>
+        <li><a href="/">홈</a></li>
+        <li><a href="/game">미니 게임</a></li>
+      </ul>
+    </nav>
+  </div>
+
 
   <!-- ✅ 인트로 화면 -->
   <div class="intro-wrapper">
